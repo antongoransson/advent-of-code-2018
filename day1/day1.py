@@ -9,7 +9,7 @@ def solve_part_1(frequencies):
 def solve_part_2(frequencies):
     i = 0
     current_freq = 0
-    unique_freq = set()
+    unique_freq = set([0])
     l = len(frequencies)
     # while True:
     for freq in cycle(frequencies):
