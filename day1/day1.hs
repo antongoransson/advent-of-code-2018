@@ -13,7 +13,7 @@ solvePart1 :: [Int] -> Int
 solvePart1 = sum
 
 solvePart2 ::  [Int] -> Int
-solvePart2 = solve Set.empty 0 . cycle 
-    where solve visitedFreqs current (f:freqs) 
-                | current `Set.member` visitedFreqs = current
-                | otherwise = solve (Set.insert current visitedFreqs) (current + f) freqs
+solvePart2 = solve Set.empty . scanl (+) 0 . cycle 
+    where solve visitedFreqs (f:freqs) 
+                | f `Set.member` visitedFreqs = f
+                | otherwise = solve (Set.insert f visitedFreqs) freqs
