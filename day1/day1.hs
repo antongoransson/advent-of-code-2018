@@ -4,7 +4,7 @@ import qualified Data.Set as Set
 main = do 
     input <- readLines "input.txt"
     putStrLn $ "Part 1: " ++ show (solvePart1 input)
-    putStrLn $ "Part 2: " ++ show (solvePart2 input 0 Set.empty 0)
+    putStrLn $ "Part 2: " ++ show (solvePart2 (cycle input) Set.empty 0)
 
 readLines = fmap (map (toInt . substitute '+' "") .  lines ) . readFile
 
@@ -19,7 +19,7 @@ substitute char sub = concatMap replace
 solvePart1 :: [Int] -> Int
 solvePart1 = sum
 
-solvePart2 :: [Int] -> Int -> Set Int -> Int -> Int
-solvePart2 freqs i visitedFreqs current
+solvePart2 :: [Int] -> Set Int -> Int -> Int
+solvePart2 (f:freqs) visitedFreqs current
     | current `Set.member` visitedFreqs = current
-    | otherwise = solvePart2 freqs ((i + 1) `mod` length freqs) (Set.insert current visitedFreqs) (current + freqs !! i)
+    | otherwise = solvePart2 freqs (Set.insert current visitedFreqs) (current + f)
