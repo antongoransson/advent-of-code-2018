@@ -3,8 +3,8 @@ import qualified Data.Set as Set
 
 main = do 
     input <- readLines "input.txt"
-    print $ solvePart1 input
-    print $ solvePart2 input 0 Set.empty 0
+    putStrLn $ "Part 1: " ++ show (solvePart1 input)
+    putStrLn $ "Part 2: " ++ show (solvePart2 input 0 Set.empty 0)
 
 readLines = fmap (map (toInt . substitute '+' "") .  lines ) . readFile
 
