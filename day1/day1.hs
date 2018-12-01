@@ -2,19 +2,13 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 
 main = do 
-    input <- readLines "input.txt"
+    input <- fmap (map parse . lines) (readFile "input.txt")
     putStrLn $ "Part 1: " ++ show (solvePart1 input)
     putStrLn $ "Part 2: " ++ show (solvePart2 (cycle input) Set.empty 0)
 
-readLines = fmap (map (toInt . substitute '+' "") .  lines ) . readFile
 
-toInt :: String -> Int
-toInt = read
-
-substitute :: Eq a => a -> [a] -> [a] -> [a]
-substitute char sub = concatMap replace
-  where replace c | c == char = sub
-                  | otherwise = [c]
+parse :: String -> Int
+parse = read . filter (/= '+')
 
 solvePart1 :: [Int] -> Int
 solvePart1 = sum
