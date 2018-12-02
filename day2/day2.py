@@ -29,7 +29,7 @@ def solve_part_2(box_ids):
 
 def main():
     with open('input.txt') as f:
-        box_ids = [freq.strip() for freq in f]
+        box_ids = [b_id.strip() for b_id in f]
     sol1 = solve_part_1(box_ids)
     print('Part 1: {}'.format(sol1))
     sol2 = solve_part_2(box_ids)
