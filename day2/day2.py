@@ -1,5 +1,6 @@
 
 from collections import Counter
+from itertools import combinations
 
 
 def solve_part_1(box_ids):
@@ -15,16 +16,11 @@ def solve_part_1(box_ids):
 
 
 def solve_part_2(box_ids):
-    for b_id1 in box_ids:
-        for i in range(len(b_id1)):
-            for b_id2 in box_ids:
-                for j in range(len(b_id2)):
-                    if b_id1 == b_id2:
-                        continue
-                    b1 = b_id1[0:i] + b_id1[i + 1:]
-                    b2 = b_id2[0:j] + b_id2[j + 1:]
-                    if b1 == b2:
-                        return b1
+    for box_id1, box_id2 in combinations(box_ids, 2):
+        b2_seqs = [box_id2[0:i] + box_id2[i + 1:] for i in range(len(box_ids))]
+        for b1_seq in [box_id1[0:i] + box_id1[i + 1:] for i in range(len(box_ids))]:
+            if b1_seq in b2_seqs:
+                return b1_seq
 
 
 def main():
