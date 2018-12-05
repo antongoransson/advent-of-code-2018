@@ -15,7 +15,7 @@ def solve_part_1(string):
 
 def solve_part_2(string):
     best = 10000
-    for char in "abcdefghijklmnopqrtstuvwxyz":
+    for char in "abcdefghijklmnopqrstuvwxyz":
         to_replace = [char, char.capitalize()]
         s = [c for c in list(string) if c not in to_replace]
         l = solve_part_1(s)
