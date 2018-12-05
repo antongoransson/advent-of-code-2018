@@ -1,5 +1,3 @@
-
-
 def solve_part_1(string):
     s = list(string)
     i = 0
