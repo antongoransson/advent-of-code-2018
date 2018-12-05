@@ -1,9 +1,9 @@
-
 from collections import Counter
 from itertools import combinations
 from collections import Counter
 
 size = 1200
+
 
 def solve_part_1(claims):
     square = [[0 for i in range(size)] for j in range(size)]
