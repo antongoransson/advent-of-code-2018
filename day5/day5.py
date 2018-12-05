@@ -2,7 +2,7 @@ def solve_part_1(string):
     stack = []
     for char in string:
         stack.append(char)
-        while len(stack) > 1 and stack[-1] == stack[-2].swapcase():
+        if len(stack) > 1 and stack[-1] == stack[-2].swapcase():
             stack.pop()
             stack.pop()
     return len(stack)
