@@ -5,7 +5,7 @@ import qualified Data.Set as Set
 main = do 
     input <- fmap lines $ readFile "input.txt"
     putStrLn $ "Part 1: " ++ show (solvePart1 input)
-    putStrLn $ "Part 2: " ++ show (solvePart2 input)
+    putStrLn $ "Part 2: " ++ solvePart2 input
 
 count :: Int -> [[Int]] -> Int
 count x = length . concatMap (filter (==x))
