@@ -21,4 +21,4 @@ prepareInput:: String -> [String]
 prepareInput input = map (const (reaction [] input)) alphabet
 
 solvePart2 :: String -> Int
-solvePart2 = minimum . map (\(c, xs) -> length $ reaction [] (filter (\x -> toLower x /=c ) xs)) . zip alphabet . prepareInput
+solvePart2 input = minimum . map length $ [reaction [] (filter ((/=c).toLower) input) | c <- alphabet]
