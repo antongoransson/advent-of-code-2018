@@ -11,9 +11,8 @@ def solve_part_1(n_players, n_marbles):
                 best_player = max(player_scores, key=player_scores.get)
                 return (best_player, player_scores[best_player])
             if next_marble % 23 == 0:
-                player_scores[p] += next_marble
                 board.rotate(7)
-                player_scores[p] += board.popleft()
+                player_scores[p] += next_marble + board.popleft()
             else:
                 board.rotate(-2)
                 board.appendleft(next_marble)
