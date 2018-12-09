@@ -1,22 +1,19 @@
 from collections import deque
+from itertools import cycle
 
 
 def solve_part_1(n_players, n_marbles):
     board = deque([0])
     player_scores = {i: 0 for i in range(n_players)}
-    next_marble = 1
-    while True:
-        for p in range(n_players):
-            if next_marble > n_marbles:
-                best_player = max(player_scores, key=player_scores.get)
-                return (best_player, player_scores[best_player])
-            if next_marble % 23 == 0:
-                board.rotate(7)
-                player_scores[p] += next_marble + board.popleft()
-            else:
-                board.rotate(-2)
-                board.appendleft(next_marble)
-            next_marble += 1
+    for next_marble, player in zip([i + 1 for i in range(n_marbles + 1)], cycle([i for i in range(n_players)])):
+        if next_marble % 23 == 0:
+            board.rotate(7)
+            player_scores[player] += next_marble + board.popleft()
+        else:
+            board.rotate(-2)
+            board.appendleft(next_marble)
+    best_player = max(player_scores, key=player_scores.get)
+    return (best_player, player_scores[best_player])
 
 
 def main():
