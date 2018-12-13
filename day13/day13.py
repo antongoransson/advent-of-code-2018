@@ -18,6 +18,7 @@ directions = {
     ('>', 'STRAIGHT'): {'new_direction': '>', 'pos_diff': (0, 1)},
     ('>', 'RIGHT'): {'new_direction': 'v', 'pos_diff': (1, 0)}
 }
+
 turn_events = {
     ('^', '/'): {'new_direction': '>', 'pos_diff': (0, 1)},
     ('^', '\\'): {'new_direction': '<', 'pos_diff': (0, -1)},
@@ -44,71 +45,56 @@ def solve_part_1(cart_map, carts):
             turn = cart['next_turn']
             if path is '+':
                 event = directions[(direction, turn)]
-                direction = event['new_direction']
-                new_pos = event['pos_diff']
                 turn = turns[turn]
             else:
                 event = turn_events[(direction, path)]
-                direction = event['new_direction']
-                new_pos = event['pos_diff']
+            direction = event['new_direction']
+            new_pos = event['pos_diff']
             pos = (pos[0] + new_pos[0], pos[1] + new_pos[1])
             carts[i] = {'next_turn': turn, 'pos': pos, 'direction': direction}
-            locs = []
-            for cart in carts:
-                if cart['pos'] in locs:
-                    return cart['pos'][1], cart['pos'][0]
-                locs.append(cart['pos'])
+            current_locs = []
+            for c in carts:
+                if c['pos'] in current_locs:
+                    return c['pos'][1], c['pos'][0]
+                current_locs.append(c['pos'])
 
 
 def solve_part_2(cart_map, carts):
-    its_time = 0
     while True:
         carts.sort(key=lambda x: x['pos'])
-        to_del = []
-        locs = []
-        if len(carts) == 1:
-            its_time += 1
+        dead = []
+        current_locs = []
         for i, cart in enumerate(carts):
             pos = cart['pos']
+            if pos in current_locs:
+                dead.append(pos)
+                continue
             path = cart_map[pos]
-            # if pos in locs:
-            #     continue
             direction = cart['direction']
             turn = cart['next_turn']
             if path is '+':
-                d = directions[(direction, turn)]
-                direction = d['new_direction']
-                new_pos = d['pos_diff']
-                pos = (pos[0] + new_pos[0], pos[1] + new_pos[1])
+                event = directions[(direction, turn)]
                 turn = turns[turn]
             else:
-                t = turn_events[(direction, path)]
-                direction = t['new_direction']
-                pos = (pos[0] + t['pos_diff'][0], pos[1] + t['pos_diff'][1])
+                event = turn_events[(direction, path)]
+            direction = event['new_direction']
+            new_pos = event['pos_diff']
+            pos = (pos[0] + new_pos[0], pos[1] + new_pos[1])
             carts[i] = {'next_turn': turn, 'pos': pos, 'direction': direction}
-
-            for cart in carts:
-                if cart['pos'] in locs:
-                    to_del.append(cart['pos'])
-                else:
-                    locs.append(cart['pos'])
-        carts = [cart for cart in carts if cart['pos'] not in to_del]
-        if len(carts) == 1 and its_time == 2:
-            print(carts[0])
-            return carts[0]['pos']
-        # for cart in carts:
-        #     if cart['pos'] in locs:
-        #         to_del.append(cart['pos'])
-        #     else:
-        #         locs.append(cart['pos'])
-        # carts = [cart for cart in carts if cart['pos'] not in to_del]
+            if pos in current_locs:
+                dead.append(carts[i]['pos'])
+            else:
+                current_locs.append(carts[i]['pos'])
+        carts = [cart for cart in carts if cart['pos'] not in dead]
+        if len(carts) is 1:
+            return carts[0]['pos'][1], carts[0]['pos'][0]
 
 
 def main():
     cart_map = {}
     carts = []
     m = []
-    with open('example.txt') as f:
+    with open('input.txt') as f:
         for i, line in enumerate(f.readlines()):
             s = list(line)
             m.append(line.replace('\n', '').replace('^', '|').replace(
@@ -124,9 +110,9 @@ def main():
                         'pos': (i, j), 'direction': c, 'next_turn': 'LEFT'})
                 else:
                     cart_map[(i, j)] = c
-    sol1 = solve_part_1(cart_map, carts)
+    sol1 = solve_part_1(cart_map, [c for c in carts])
     print('Part 1: {}'.format(sol1))
-    sol2 = solve_part_2(cart_map, carts)
+    sol2 = solve_part_2(cart_map, [c for c in carts])
     print('Part 2: {}'.format(sol2))
     # for r in m:
     #     print(r)
