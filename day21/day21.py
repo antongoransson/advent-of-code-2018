@@ -124,7 +124,6 @@ def solve_part_2():
             d &= 16777215
             d *= 65899
             d &= 16777215
-        # if regs[ip] == 28:
             if 256 > c:
                 if d not in seen:
                     seen.add(d)
