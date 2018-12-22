@@ -112,11 +112,22 @@ def solve_part_1(ip, instructions):
 
 
 def solve_part_2(ip, instructions):
-    pass
+    regs = [0] * 6
+    regs[0] = 1
+    while regs[ip] < len(instructions):
+        if regs[ip] == 2 and regs[3] != 0:
+            if regs[5] % regs[3] == 0:
+                regs[0] += regs[3]
+            regs[2] = 1
+            regs[1] = regs[5]
+            regs[ip] = 12
+        c_i = instructions[regs[ip]]
+        opcodes[c_i[0]](regs, *c_i[1:])
+        regs[ip] += 1
+    return regs[0]
 
 
 def main():
-    samples = []
     with open('input.txt') as f:
         ip = int(f.readline().strip()[-1])
         lines = [line.strip().split(' ') for line in f]

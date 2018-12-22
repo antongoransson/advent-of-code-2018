@@ -1,5 +1,7 @@
 
 from collections import deque
+
+
 class Unit:
     def __init__(self, hp, pos, ap, t):
         self.hp = hp
@@ -87,6 +89,7 @@ def bfs(graph, grid, start, goal):
                 explored.add(node)
     return paths
 
+
 def simulate_game(grid, units, is_part2):
     graph = get_neighbours(grid)
     for i in range(100):
@@ -100,8 +103,8 @@ def simulate_game(grid, units, is_part2):
             if not targets:
                 return i * sum([unit.hp for unit in units if not unit.dead])
             u.maybe_attack(grid, targets)
-             if is_part2 and u.killed_elf:
-                        return False
+            if is_part2 and u.killed_elf:
+                return False
             if not u.has_attacked:
                 paths = []
                 for t in targets:
@@ -115,6 +118,7 @@ def simulate_game(grid, units, is_part2):
                     u.maybe_attack(grid, targets)
                     if is_part2 and u.killed_elf:
                         return False
+
 
 def test():
     sol = [18740, 27730, 36334, 39514, 27755, 28944]
