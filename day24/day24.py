@@ -3,8 +3,8 @@ from itertools import chain
 
 
 class Group:
-    def __init__(self, army_name, n_units, hp, ap, dmg_type, initiative, weaknesses, immunities):
-        self.army_name = army_name
+    def __init__(self, army, n_units, hp, ap, dmg_type, initiative, weaknesses, immunities):
+        self.army = army
         self.hp = int(hp)
         self.ap = int(ap)
         self.n_units = int(n_units)
@@ -15,25 +15,18 @@ class Group:
         self.target = None
         self.dead = False
 
-    def __str__(self):
-        return f'Army: {self.army_name}, HP: {self.hp}, AP: {self.ap}, Units: {self.n_units}, Dmg: {self.dmg_type}, Initative: {self.initiative}, Weaknesses: {self.weaknesses}, Immune: {self.immunities}, Targets: {1 if self.target else 0}'
-
     def copy(self, boost=0):
-        return Group(self.army_name, self.n_units, self.hp, self.ap + boost, self.dmg_type, self.initiative, self.weaknesses, self.immunities)
+        return Group(self.army, self.n_units, self.hp, self.ap + boost, self.dmg_type, self.initiative, self.weaknesses, self.immunities)
 
     def ep(self):
         return self.ap * self.n_units
 
-    def tot_hp(self):
-        return self.hp * self.n_units
-
     def attack(self):
-        if self.target:
-            t = self.target
-            dmg = self.effective_damage(t) // t.hp
-            t.n_units -= dmg
-            if t.n_units <= 0:
-                t.dead = True
+        t = self.target
+        dmg = self.effective_damage(t) // t.hp
+        t.n_units -= dmg
+        if t.n_units <= 0:
+            t.dead = True
         self.target = None
 
     def set_target(self, possible_targets):
@@ -58,19 +51,20 @@ def fight(groups):
     while True:
         groups.sort(key=lambda x: (x.ep(), x.initiative), reverse=True)
         for g in groups:
-            enemy_groups = [e for e in groups if e.army_name != g.army_name]
+            enemy_groups = [e for e in groups if e.army != g.army]
             if not enemy_groups:
-                return sum([group.n_units for group in groups]), g.army_name
-            friendly_groups = [f for f in groups if f.army_name == g.army_name]
-            friendly_targets = [f.target for f in friendly_groups]
-            possible_targets = [
-                e for e in enemy_groups if e not in friendly_targets]
-            g.set_target(possible_targets)
+                return sum([group.n_units for group in groups]), g.army
+            curr_targets = [f.target for f in groups if f.army == g.army]
+            g.set_target([e for e in enemy_groups if e not in curr_targets])
         groups.sort(key=lambda x: x.initiative, reverse=True)
+        n_attacks = 0
         for g in groups:
-            if g.dead:
+            if g.dead or not g.target:
                 continue
             g.attack()
+            n_attacks += 1
+        if n_attacks == 0:
+            return None, None
         groups = [g for g in groups if not g.dead]
 
 
@@ -83,44 +77,39 @@ def solve_part_1(groups):
 def solve_part_2(groups):
     g = [group.copy() for group in groups]
     n_units, team = fight(g)
-    boost = 52
-    while team == 'Infection':
-        g = [group.copy(boost * int(group.army_name != 'Infection'))
+    boost = 0
+    while team != 'Immune System':
+        g = [group.copy(boost * int(group.army == 'Immune System'))
              for group in groups]
         n_units, team = fight(g)
         boost += 1
-    return n_units, team
+    return n_units
 
 
 def main():
     groups = []
     with open('input.txt') as f:
-        current_army = ''
-        for line in f:
-            l = line.strip()
-            if not l:
-                continue
-            if l[-1] == ':':
-                current_army = l[:-1]
-            else:
-                n_units, hp, ap, initiative = re.findall(r'-?\d+', l)
-                s = re.search(r'\(.*\)', l)
-                weaknesses = []
-                immunities = []
-                if s:
-                    weaknesses = re.findall(
-                        r'weak to (\w*)(, \w*)?', s.group(0))
-                    immunities = re.findall(
-                        r'immune to (\w*)(, \w*)?', s.group(0))
-                    if weaknesses:
-                        weaknesses = [w.replace(', ', '')
-                                      for w in weaknesses[0] if w]
-                    if immunities:
-                        immunities = [w.replace(', ', '')
-                                      for w in immunities[0] if w]
-                dmg_type = re.findall(r'\d+ (\w+) damage', l)[0]
-                groups.append(Group(current_army, n_units, hp, ap,
-                                    dmg_type, initiative, weaknesses, immunities))
+        lines = [line.strip() for line in f if line.strip()]
+    current_army = ''
+    for l in lines:
+        if l[-1] == ':':
+            current_army = l[:-1]
+            continue
+        n_units, hp, ap, initiative = re.findall(r'-?\d+', l)
+        s = re.search(r'\(.*\)', l)
+        w, i = [], []
+        if s:
+            w = re.findall(
+                r'weak to (\w*)(, \w*)?', s.group(0))
+            i = re.findall(
+                r'immune to (\w*)(, \w*)?', s.group(0))
+            if w:
+                w = [s.replace(', ', '') for s in w[0] if w]
+            if i:
+                i = [w.replace(', ', '') for w in i[0] if w]
+        dmg_type = re.findall(r'\d+ (\w+) damage', l)[0]
+        g = Group(current_army, n_units, hp, ap, dmg_type, initiative, w, i)
+        groups.append(g)
     sol1 = solve_part_1(groups)
     print('Part 1: {}'.format(sol1))
     sol2 = solve_part_2(groups)
