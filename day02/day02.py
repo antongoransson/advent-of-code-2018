@@ -7,19 +7,21 @@ def solve_part_1(box_ids):
     n_three = 0
     for b_id in box_ids:
         c = Counter(b_id)
-        if 2 in c.values():
-            n_two += 1
-        if 3 in c.values():
-            n_three += 1
+        for v in c.values():
+            if v == 2:
+                n_two += 1
+            elif v == 3:
+                n_three += 1
     return n_two * n_three
 
 
 def solve_part_2(box_ids):
     for box_id1, box_id2 in combinations(box_ids, 2):
-        b2_seqs = [box_id2[0:i] + box_id2[i + 1:] for i in range(len(box_ids))]
-        for b1_seq in [box_id1[0:i] + box_id1[i + 1:] for i in range(len(box_ids))]:
-            if b1_seq in b2_seqs:
-                return b1_seq
+        for i in range(len(box_ids)):
+            box_seq1 = box_id1[0:i] + box_id1[i + 1:]
+            box_seq2 = box_id2[0:i] + box_id2[i + 1:]
+            if box_seq1 == box_seq2:
+                return box_seq1
 
 
 def main():
